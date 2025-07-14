@@ -1,1 +1,514 @@
-
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GeminiITM — Генерация изображений</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #a887ff;
+      --sidebar: #7e53d4;
+      --sidebar-dark: #5632a7;
+      --bg: #19192b;
+      --bg2: #221e3f;
+      --card: #232143;
+      --card2: #22213c;
+      --white: #f9f8ff;
+      --text: #ece6fa;
+      --shadow: 0 10px 40px #1e13342a;
+      --radius: 30px;
+    }
+    html,body {
+      height: 100%;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(120deg,#19192b 0%,#232143 100%);
+      color: var(--text);
+      font-family: 'Inter', 'Montserrat', Arial, sans-serif;
+      box-sizing: border-box;
+      overflow-x: hidden;
+    }
+    body { min-height: 100vh; }
+    /* Header */
+    .header {
+      background: var(--sidebar);
+      color: var(--white);
+      padding: 0;
+      margin: 0;
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 0 40px #a887ff22;
+      position: relative;
+      z-index: 21;
+    }
+    .header .logo {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: 2.1rem;
+      margin-left: 2.2vw;
+      letter-spacing: 2.5px;
+      color: #fff;
+    }
+    .header .menu-bar {
+      display: flex;
+      gap: 34px;
+      align-items: center;
+      margin-right: 2.5vw;
+      font-size: 1.11rem;
+    }
+    .header .menu-bar a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      letter-spacing: 1px;
+      transition: color .18s;
+      padding: 6px 9px;
+      border-radius: 9px;
+    }
+    .header .menu-bar a:hover { background: var(--sidebar-dark); color: #d1c7f8;}
+    .header .menu-btn {
+      display: none;
+      background: #fff;
+      border-radius: 50%;
+      width: 44px; height: 44px;
+      justify-content: center; align-items: center;
+      margin-right: 14px;
+      font-size: 2.1rem;
+      color: var(--sidebar-dark);
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 6px 24px #21173a1c;
+    }
+    /* Sidebar & user panel */
+    .container-main {
+      display: flex;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+    .sidebar {
+      background: var(--sidebar);
+      color: var(--white);
+      width: 265px;
+      min-width: 195px;
+      max-width: 270px;
+      height: calc(100vh - 90px);
+      border-radius: 0 22px 22px 0;
+      box-shadow: 0 0 30px #a887ff18;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      position: sticky;
+      top: 90px;
+      z-index: 10;
+      padding-bottom: 26px;
+    }
+    .user-panel {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin: 27px 0 15px 25px;
+      width: 85%;
+    }
+    .user-avatar {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      box-shadow: 0 4px 15px #10092122;
+      border: 2px solid #d4c6ff33;
+      object-fit: cover;
+      background: #332c5e;
+    }
+    .user-info { display: flex; flex-direction: column;}
+    .user-name {
+      font-size: 1.18rem;
+      font-weight: 900;
+      letter-spacing: .3px;
+      color: #fff;
+      margin-bottom: 4px;
+      font-family: 'Montserrat', Arial, sans-serif;
+    }
+    .user-premium {
+      background: linear-gradient(90deg,#fff6a7,#ad93fc 95%);
+      color: #5632a7;
+      font-size: .95rem;
+      font-weight: 800;
+      border-radius: 14px;
+      padding: 2px 15px 3px 15px;
+      display: inline-block;
+      box-shadow: 0 2px 11px #fff3;
+      letter-spacing: .5px;
+      margin-top: 1px;
+    }
+    .sidebar nav {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-left: 0;
+      margin-top: 18px;
+    }
+    .sidebar nav a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 1.17rem;
+      font-weight: 800;
+      padding: 16px 10px 16px 31px;
+      background: none;
+      border-radius: 13px 0 0 13px;
+      transition: background .15s;
+      margin-right: 12px;
+      width: 90%;
+      letter-spacing: .2px;
+      display: block;
+    }
+    .sidebar nav a.active,
+    .sidebar nav a:hover {
+      background: var(--sidebar-dark);
+      color: #fffded;
+    }
+    .sidebar .support-link {
+      margin: 33px 0 0 28px;
+      font-size: 1.06rem;
+      color: #e0d6ff;
+      opacity: 0.83;
+      text-decoration: underline dashed;
+      letter-spacing: .3px;
+    }
+    /* Main content */
+    .main-content {
+      margin-left: 265px;
+      width: calc(100vw - 265px);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding-bottom: 60px;
+    }
+    .main-panel {
+      margin-top: 48px;
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      width: 480px;
+      max-width: 96vw;
+      min-height: 245px;
+      padding: 33px 30px 21px 33px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .main-title {
+      font-size: 2.17rem;
+      font-family: 'Montserrat',Arial,sans-serif;
+      font-weight: 900;
+      color: var(--accent);
+      margin-bottom: 4px;
+      letter-spacing: .5px;
+      text-align: center;
+      text-shadow: 0 2px 13px #100f20bb;
+    }
+    .subtitle {
+      font-size: 1.09rem;
+      color: #aa94ee;
+      font-weight: 600;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    /* Form */
+    .imggen-form {
+      display: flex;
+      gap: 13px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      align-items: center;
+      width: 100%;
+      justify-content: center;
+    }
+    .imggen-input {
+      flex: 1 1 175px;
+      padding: 13px 19px;
+      border: 2px solid #3a2c52;
+      border-radius: 15px;
+      font-size: 1.12rem;
+      background: #18182a;
+      min-width: 0;
+      color: #ebd8ff;
+      transition: border-color .13s;
+      outline: none;
+    }
+    .imggen-input:focus {
+      border-color: #a382ee;
+      background: #262245;
+      color: #fff;
+    }
+    .imggen-submit {
+      padding: 13px 32px;
+      background: linear-gradient(90deg,#a887ff 14%,#8254e6 90%);
+      color: #fff;
+      font-size: 1.13rem;
+      font-weight: 900;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      box-shadow: 0 4px 24px #6a3dc332;
+      transition: background .16s, box-shadow .13s;
+      font-family: 'Montserrat', Arial, sans-serif;
+    }
+    .imggen-submit:hover {
+      background: linear-gradient(90deg,#8254e6 10%,#a887ff 85%);
+      box-shadow: 0 7px 36px #a57ffa2c;
+    }
+    .error-message {
+      color: #efad79;
+      margin-top: 7px;
+      font-weight: 600;
+      font-size: 1.03rem;
+      text-align: center;
+    }
+    /* Gallery */
+    .imggen-gallery-block {
+      width: 98%;
+      max-width: 980px;
+      margin: 38px auto 25px auto;
+      border-radius: 24px;
+      background: linear-gradient(120deg,#181a2d 60%,#231f3c 100%);
+      box-shadow: 0 8px 40px #a887ff12;
+      padding: 18px 0 20px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .gallery-title {
+      text-align: center;
+      font-size: 1.2rem;
+      font-family: 'Montserrat', Arial, sans-serif;
+      font-weight: 800;
+      color: #c0a8fd;
+      margin-bottom: 15px;
+      letter-spacing: .23px;
+    }
+    .imggen-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
+      gap: 28px;
+      justify-items: center;
+      width: 97%;
+      margin: 0 auto;
+    }
+    .gallery-item {
+      background: var(--card2);
+      border-radius: 13px;
+      padding: 14px 10px 13px 10px;
+      box-shadow: 0 3px 14px #9e73ff17;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 130px;
+      max-width: 330px;
+      margin: 0 auto;
+      transition: transform .12s, box-shadow .13s;
+    }
+    .gallery-item img {
+      max-width: 97%;
+      max-height: 115px;
+      border-radius: 10px;
+      background: #19182a;
+      box-shadow: 0 2px 15px #543ab815;
+      object-fit: cover;
+      display: block;
+      margin: 0 auto 7px auto;
+    }
+    .gallery-item-btns {
+      display: flex;
+      gap: 11px;
+      justify-content: center;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+    .download-btn {
+      font-size: 1.05rem;
+      background: linear-gradient(90deg,#a382ee,#6942d7 85%);
+      color: #fff;
+      border-radius: 12px;
+      padding: 7px 23px;
+      text-decoration: none;
+      font-weight: 800;
+      border: none;
+      cursor: pointer;
+      transition: background .13s, color .13s;
+      box-shadow: 0 1px 8px #0002;
+      outline: none;
+      font-family: 'Montserrat', Arial, sans-serif;
+      margin-bottom: 3px;
+    }
+    .download-btn:hover { background: #cdb7fc; color: #372655; }
+    /* Mobile & burger */
+    @media (max-width: 900px) {
+      .container-main { flex-direction: column; }
+      .sidebar {
+        width: 100vw;
+        min-width: 0;
+        max-width: 100vw;
+        height: auto;
+        position: static;
+        border-radius: 0 0 19px 19px;
+        box-shadow: 0 4px 28px #a887ff12;
+        align-items: flex-start;
+        padding-bottom: 7px;
+      }
+      .user-panel { margin: 16px 0 8px 14px; gap: 9px;}
+      .sidebar .support-link {margin: 13px 0 9px 12px; font-size: 0.96rem;}
+      .main-content { margin-left: 0; width: 100vw;}
+      .main-panel { max-width: 98vw; padding: 5vw 2vw 3vw 2vw;}
+      .imggen-gallery-block {padding: 9px 0 10px 0;}
+      .sidebar nav a {font-size: 1rem; padding: 11px 6px 11px 13px;}
+    }
+    @media (max-width: 760px) {
+      .header .menu-bar { display: none; }
+      .header .menu-btn { display: flex;}
+      .sidebar { position: fixed; left: -101vw; top: 76px; width: 94vw; max-width: 320px; min-width: 0; border-radius: 0 19px 20px 0; transition: left .22s; box-shadow: 12px 0 36px #25186b38;}
+      .sidebar.open { left: 0; }
+      .main-content { margin-left: 0; width: 100vw;}
+      .container-main { flex-direction: column; }
+    }
+    @media (max-width: 540px) {
+      .main-panel, .imggen-gallery-block { border-radius: 11px;}
+      .gallery-title { font-size: .98rem;}
+      .imggen-gallery { grid-template-columns: 1fr; gap: 12px;}
+      .gallery-item { max-width: 100vw; }
+    }
+    @media (max-width: 420px) {
+      .header { height: 62px;}
+      .header .logo { font-size: 1.09rem; margin-left: 7px;}
+      .main-title {font-size: 1.12rem;}
+      .sidebar nav a {font-size: .93rem;}
+    }
+</style>
+</head>
+<body>
+  <div class="container-main">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="user-panel">
+        <img src="https://randomuser.me/api/portraits/men/11.jpg" alt="avatar" class="user-avatar">
+        <div class="user-info">
+          <div class="user-name">Иван User</div>
+          <div class="user-premium">Premium</div>
+        </div>
+      </div>
+      <nav>
+        <a href="#" class="active" onclick="showTab('gen');return false;">Генерация</a>
+        <a href="#" onclick="showTab('pay');return false;">Оплата</a>
+        <a href="#" onclick="showTab('support');return false;">Поддержка</a>
+      </nav>
+      <a class="support-link" href="https://t.me/GeminiITMWeb_bot" target="_blank">@GeminiITMWeb_bot</a>
+    </aside>
+    <!-- Main content -->
+    <div class="main-content">
+      <!-- Генерация -->
+      <section class="main-panel" id="tab-gen">
+        <div class="main-title">Генерация изображений</div>
+        <div class="subtitle">ITMarket x AI</div>
+        <form class="imggen-form" id="imggen-form">
+          <input id="imggen-prompt" class="imggen-input" placeholder="Опиши картинку..." required />
+          <button type="submit" class="imggen-submit">Сгенерировать</button>
+        </form>
+        <div class="error-message" id="error-msg" style="display:none;"></div>
+      </section>
+      <!-- Оплата -->
+      <section class="main-panel" id="tab-pay" style="display:none;">
+        <div class="main-title">Оплата подписки</div>
+        <div style="margin:18px 0 9px 0;">
+          Оформи премиум-доступ и получи неограниченные генерации!<br>
+          <button id="pay-btn" class="imggen-submit" style="margin-top: 13px;">Оплатить через CryptoBot</button>
+        </div>
+      </section>
+      <!-- Поддержка -->
+      <section class="main-panel" id="tab-support" style="display:none;">
+        <div class="main-title">Техническая поддержка</div>
+        <div style="margin:19px 0 8px 0;">
+          По всем вопросам обращайтесь:<br>
+          <a href="https://t.me/romanychxxx" class="download-btn" style="margin-top:12px;" target="_blank">@romanychxxx</a>
+        </div>
+      </section>
+      <!-- Галерея -->
+      <div class="imggen-gallery-block">
+        <div class="gallery-title">Альбом генераций GeminiITM</div>
+        <div id="imggen-gallery" class="imggen-gallery">
+          <!-- Пример -->
+          <div class="gallery-item">
+            <img src="https://cdn.midjourney.com/2a68ef1f.jpg" alt="AI">
+            <div class="gallery-item-btns">
+              <a href="https://cdn.midjourney.com/2a68ef1f.jpg" class="download-btn" download>Скачать</a>
+              <button class="download-btn" onclick="alert('Будет делиться!')">Поделиться</button>
+              <button class="download-btn" onclick="alert('Удалено!')">Удалить</button>
+            </div>
+          </div>
+          <div class="gallery-item">
+            <img src="https://cdn.midjourney.com/9dd197bf.jpg" alt="AI">
+            <div class="gallery-item-btns">
+              <a href="https://cdn.midjourney.com/9dd197bf.jpg" class="download-btn" download>Скачать</a>
+              <button class="download-btn" onclick="alert('Будет делиться!')">Поделиться</button>
+              <button class="download-btn" onclick="alert('Удалено!')">Удалить</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Бургер-меню для мобильных
+    function toggleSidebar() {
+      var sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('open');
+    }
+    // Переключение вкладок
+    function showTab(tab) {
+      document.querySelectorAll('.sidebar nav a').forEach(l=>l.classList.remove('active'));
+      if(tab==='gen') document.querySelectorAll('.sidebar nav a')[0].classList.add('active');
+      if(tab==='pay') document.querySelectorAll('.sidebar nav a')[1].classList.add('active');
+      if(tab==='support') document.querySelectorAll('.sidebar nav a')[2].classList.add('active');
+      document.getElementById('tab-gen').style.display = tab==='gen'?'block':'none';
+      document.getElementById('tab-pay').style.display = tab==='pay'?'block':'none';
+      document.getElementById('tab-support').style.display = tab==='support'?'block':'none';
+      // Закрывать меню на мобилках
+      if(window.innerWidth<900) document.getElementById('sidebar').classList.remove('open');
+    }
+    // Кнопка оплаты
+    document.getElementById('pay-btn') && (document.getElementById('pay-btn').onclick = function(){
+      window.open("https://t.me/CryptoBot?start=IVUYDUSQ5khw", "_blank");
+    });
+    // Генерация (пример ajax-запроса)
+    document.getElementById('imggen-form').onsubmit = async function(e){
+      e.preventDefault();
+      let prompt = document.getElementById('imggen-prompt').value.trim();
+      const errorMsg = document.getElementById('error-msg');
+      errorMsg.style.display = 'none';
+      if(prompt.length < 3) {
+        errorMsg.innerText = "Слишком короткий запрос";
+        errorMsg.style.display = 'block';
+        return;
+      }
+      const btn = document.querySelector('.imggen-submit');
+      btn.disabled = true; btn.innerHTML = "Генерируем...";
+      try {
+        setTimeout(()=>{
+          btn.innerHTML = "Сгенерировать"; btn.disabled = false;
+          errorMsg.innerText = "Ошибка генерации!"; errorMsg.style.display = 'block';
+        },1000)
+      } catch(err) {
+        btn.innerHTML = "Сгенерировать"; btn.disabled = false;
+        errorMsg.innerText = "Ошибка генерации!";
+        errorMsg.style.display = 'block';
+      }
+    }
+  </script>
+</body>
+</html>
