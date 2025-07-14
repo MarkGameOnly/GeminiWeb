@@ -1,6 +1,6 @@
-document.getElementById('gen-form').onsubmit = async function(e) {
+document.getElementById('imggen-form').onsubmit = async function(e) {
   e.preventDefault();
-  const prompt = document.getElementById('prompt').value;
+  const prompt = document.getElementById('imggen-prompt').value;
   const user_id = document.getElementById('user_id').value;
   const resDiv = document.getElementById('result');
   resDiv.innerHTML = '⏳ Генерация...';
@@ -9,7 +9,7 @@ document.getElementById('gen-form').onsubmit = async function(e) {
   formData.append('prompt', prompt);
   formData.append('user_id', user_id);
 
-  const resp = await fetch('/api/generate-image', {
+  const resp = await fetch('/generate-image', {
     method: 'POST',
     body: formData
   });
@@ -20,9 +20,9 @@ document.getElementById('gen-form').onsubmit = async function(e) {
 };
 
 async function loadGallery() {
-  const galleryDiv = document.getElementById('gallery');
+  const galleryDiv = document.getElementById('imggen-gallery');
   galleryDiv.innerHTML = 'Загрузка...';
-  const resp = await fetch('/api/gallery');
+  const resp = await fetch('/gallery');
   const html = await resp.text();
   galleryDiv.innerHTML = html;
 }

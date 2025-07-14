@@ -418,9 +418,11 @@
         <div class="subtitle">ITMarket x AI</div>
         <form class="imggen-form" id="imggen-form">
           <input id="imggen-prompt" class="imggen-input" placeholder="Опиши картинку..." required />
+          <input id="user_id" type="hidden" value="test123" /> <!-- Скрытый user_id -->
           <button type="submit" class="imggen-submit">Сгенерировать</button>
         </form>
         <div class="error-message" id="error-msg" style="display:none;"></div>
+        <div id="result"></div>
       </section>
       <!-- Оплата -->
       <section class="main-panel" id="tab-pay" style="display:none;">
@@ -441,25 +443,7 @@
       <!-- Галерея -->
       <div class="imggen-gallery-block">
         <div class="gallery-title">Альбом генераций GeminiITM</div>
-        <div id="imggen-gallery" class="imggen-gallery">
-          <!-- Пример -->
-          <div class="gallery-item">
-            <img src="https://cdn.midjourney.com/2a68ef1f.jpg" alt="AI">
-            <div class="gallery-item-btns">
-              <a href="https://cdn.midjourney.com/2a68ef1f.jpg" class="download-btn" download>Скачать</a>
-              <button class="download-btn" onclick="alert('Будет делиться!')">Поделиться</button>
-              <button class="download-btn" onclick="alert('Удалено!')">Удалить</button>
-            </div>
-          </div>
-          <div class="gallery-item">
-            <img src="https://cdn.midjourney.com/9dd197bf.jpg" alt="AI">
-            <div class="gallery-item-btns">
-              <a href="https://cdn.midjourney.com/9dd197bf.jpg" class="download-btn" download>Скачать</a>
-              <button class="download-btn" onclick="alert('Будет делиться!')">Поделиться</button>
-              <button class="download-btn" onclick="alert('Удалено!')">Удалить</button>
-            </div>
-          </div>
-        </div>
+        <div id="imggen-gallery" class="imggen-gallery"></div>
       </div>
     </div>
   </div>
@@ -478,19 +462,22 @@
       document.getElementById('tab-gen').style.display = tab==='gen'?'block':'none';
       document.getElementById('tab-pay').style.display = tab==='pay'?'block':'none';
       document.getElementById('tab-support').style.display = tab==='support'?'block':'none';
-      // Закрывать меню на мобилках
       if(window.innerWidth<900) document.getElementById('sidebar').classList.remove('open');
     }
     // Кнопка оплаты
     document.getElementById('pay-btn') && (document.getElementById('pay-btn').onclick = function(){
       window.open("https://t.me/CryptoBot?start=IVUYDUSQ5khw", "_blank");
     });
-    // Генерация (пример ajax-запроса)
+
+    // --- Новый рабочий JS для генерации и галереи! ---
     document.getElementById('imggen-form').onsubmit = async function(e){
       e.preventDefault();
       let prompt = document.getElementById('imggen-prompt').value.trim();
+      let user_id = document.getElementById('user_id').value.trim();
       const errorMsg = document.getElementById('error-msg');
+      const resultDiv = document.getElementById('result');
       errorMsg.style.display = 'none';
+      resultDiv.innerHTML = '';
       if(prompt.length < 3) {
         errorMsg.innerText = "Слишком короткий запрос";
         errorMsg.style.display = 'block';
@@ -499,16 +486,30 @@
       const btn = document.querySelector('.imggen-submit');
       btn.disabled = true; btn.innerHTML = "Генерируем...";
       try {
-        setTimeout(()=>{
-          btn.innerHTML = "Сгенерировать"; btn.disabled = false;
-          errorMsg.innerText = "Ошибка генерации!"; errorMsg.style.display = 'block';
-        },1000)
+        const formData = new FormData();
+        formData.append('prompt', prompt);
+        formData.append('user_id', user_id);
+        // Путь может быть /generate-image или /api/generate-image — проверь backend!
+        const resp = await fetch('/api/generate-image', { method: 'POST', body: formData });
+        const text = await resp.text();
+        resultDiv.innerHTML = text;
+        btn.innerHTML = "Сгенерировать"; btn.disabled = false;
+        loadGallery();
       } catch(err) {
         btn.innerHTML = "Сгенерировать"; btn.disabled = false;
         errorMsg.innerText = "Ошибка генерации!";
         errorMsg.style.display = 'block';
       }
     }
+    async function loadGallery() {
+      const galleryDiv = document.getElementById('imggen-gallery');
+      galleryDiv.innerHTML = 'Загрузка...';
+      // Путь может быть /gallery или /api/gallery — проверь backend!
+      const resp = await fetch('/gallery');
+      const html = await resp.text();
+      galleryDiv.innerHTML = html;
+    }
+    window.onload = loadGallery;
   </script>
 </body>
 </html>
