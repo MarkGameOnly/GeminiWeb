@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 import openai
 import httpx
 
+
 # === .env ===
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -41,6 +42,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], allow_methods=["*"], allow_headers=["*"],
 )
+from fastapi.staticfiles import StaticFiles
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # ==== Вспомогательные функции ====
 def is_subscribed(user_id: str) -> bool:
